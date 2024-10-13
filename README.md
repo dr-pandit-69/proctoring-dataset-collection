@@ -1,6 +1,6 @@
 # Proctoring Dataset Collection
 
-![System Demo](https://giphy.com/embed/YUVs6lIV0HAFzWqKea)
+![System Demo](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3drOHcwNnBicWF3cWlkbXRyM24wbmtjZm1lNGJ0N2V4c2hmdms5biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/YUVs6lIV0HAFzWqKea/giphy.gif)
 
 (My webcam isn't connected in this demo, hence it is blank, Webcam & Mic selection to be done in browser)
 
