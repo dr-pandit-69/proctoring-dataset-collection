@@ -8,10 +8,7 @@ from sqlalchemy.sql.expression import func
 import json
 import os
 
-
-
 app = Flask(__name__, static_folder='dist', static_url_path='')
-
 
 CORS(app)
 
@@ -35,15 +32,16 @@ def get_random_questions():
         questions_count = int(open('question_count.txt', 'r').readlines()[0])
       
 
-        # Fetch the questions for each type
+       
         single_correct_questions = Question.query.filter_by(question_type='single_choice').order_by(func.random()).limit(base_count + (1 if remainder > 0 else 0)).all()
         multiple_correct_questions = Question.query.filter_by(question_type='multiple_choice').order_by(func.random()).limit(base_count + (1 if remainder > 1 else 0)).all()
         integer_questions = Question.query.filter_by(question_type='integer_type').order_by(func.random()).limit(base_count + (1 if remainder > 2 else 0)).all()
         subjective_questions = Question.query.filter_by(question_type='subjective').order_by(func.random()).limit(base_count).all()
 
-        # Combine all questions into one list
+     
        
         questions = single_correct_questions + multiple_correct_questions + integer_questions + subjective_questions
+        print(len(integer_questions))
         
 
         questions_data = []
@@ -227,4 +225,4 @@ def upload_screen():
 
 if __name__ == '__main__':
  
-    app.run(debug=True)
+    app.run( port=5000)
