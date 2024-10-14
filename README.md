@@ -52,7 +52,15 @@ pipenv shell
 pip install -r requirements.txt
 ```
 
-### Step 4: Run The Project
+### Step 4: Initialize the Databases
+
+```bash
+python create_db.py
+python feed_ques_db.py
+```
+
+
+### Step 5: Run The Project
 
 ```bash
 python app.py
