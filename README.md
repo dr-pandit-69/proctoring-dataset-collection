@@ -43,7 +43,8 @@ cd proctoring-dataset-collection
 ### Step 2: Create Virtual Environment (Optional, But Highly Recommended)
 
 ```bash
-pipenv shell
+python -m venv .venv
+.venv/scripts/activate
 ```
 
 ### Step 3: Install Dependencies
