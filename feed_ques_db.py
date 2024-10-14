@@ -8,6 +8,8 @@ DATABASE_URL = 'sqlite:///instance/database.db'
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
+
+
 integer_questions = [
     {"question_text": "What is the sum of the first 20 prime numbers?", "correct_answer": 639},
     {"question_text": "Find the HCF of 84 and 108.", "correct_answer": 12},
@@ -338,29 +340,31 @@ def add_options(question, options, correct_indices=None, correct_index=None):
             correct_answer = CorrectAnswer(question_id=question.id, option_id=option.id)
             session.add(correct_answer)
 
-
 def add_questions_to_db():
     try:
-      
+        # Handle integer type questions correctly
         for q in integer_questions:
-            question = Question(question_text=q["question_text"], question_type='single_choice', marks=1)
+            question = Question(question_text=q["question_text"], question_type='integer_type', marks=1)
             session.add(question)
-            session.flush()  
+            session.flush()  # Ensures question.id is available for later use
+            correct_answer = CorrectAnswer(question_id=question.id, integer_answer=q["correct_answer"])
+            session.add(correct_answer)
 
-      
+        # Handle multiple choice questions
         for q in multiple_select_questions:
             question = Question(question_text=q["question_text"], question_type='multiple_choice', marks=2)
             session.add(question)
             session.flush() 
             add_options(question, q["options"], correct_indices=q["correct_indices"])
 
-        
+        # Handle single choice questions
         for q in single_choice_questions:
             question = Question(question_text=q["question_text"], question_type='single_choice', marks=2)
             session.add(question)
             session.flush()  
             add_options(question, q["options"], correct_index=q["correct_index"])
 
+        # Handle subjective questions
         for q in subjective_questions:
             question = Question(question_text=q["question_text"], question_type='subjective', marks=3)
             session.add(question)

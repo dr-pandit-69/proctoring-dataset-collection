@@ -8,7 +8,6 @@ from sqlalchemy.sql.expression import func
 import json
 import os
 
-questions_count=int(open('question_count.txt','r').readlines()[0])
 
 
 app = Flask(__name__, static_folder='dist', static_url_path='')
@@ -27,20 +26,26 @@ os.makedirs(BASE_UPLOAD_DIR, exist_ok=True)
 db.Model = Base  
 Base.query = db.session.query_property() 
 
-
 @app.route('/api/questions', methods=['GET'])
 def get_random_questions():
     try:
-       
-        single_correct_questions = Question.query.filter_by(question_type='single_choice').order_by(func.random()).limit(questions_count//4).all()
-        multiple_correct_questions = Question.query.filter_by(question_type='multiple_choice').order_by(func.random()).limit(questions_count//4).all()
-        integer_questions = Question.query.filter_by(question_type='integer_type').order_by(func.random()).limit(questions_count//4).all()
-        subjective_questions = Question.query.filter_by(question_type='subjective').order_by(func.random()).limit(questions_count//4).all()
+        questions_count = int(open('question_count.txt', 'r').readlines()[0])
+        base_count = questions_count // 4
+        remainder = questions_count % 4  # To handle the remainder after division by 4
+        questions_count = int(open('question_count.txt', 'r').readlines()[0])
+      
 
+        # Fetch the questions for each type
+        single_correct_questions = Question.query.filter_by(question_type='single_choice').order_by(func.random()).limit(base_count + (1 if remainder > 0 else 0)).all()
+        multiple_correct_questions = Question.query.filter_by(question_type='multiple_choice').order_by(func.random()).limit(base_count + (1 if remainder > 1 else 0)).all()
+        integer_questions = Question.query.filter_by(question_type='integer_type').order_by(func.random()).limit(base_count + (1 if remainder > 2 else 0)).all()
+        subjective_questions = Question.query.filter_by(question_type='subjective').order_by(func.random()).limit(base_count).all()
+
+        # Combine all questions into one list
        
         questions = single_correct_questions + multiple_correct_questions + integer_questions + subjective_questions
+        
 
-       
         questions_data = []
         for question in questions:
             question_data = {
@@ -59,7 +64,7 @@ def get_random_questions():
                 'updated_at': question.updated_at
             }
             questions_data.append(question_data)
-
+        
        
         return jsonify({'questions': questions_data}), 200
     except Exception as e:

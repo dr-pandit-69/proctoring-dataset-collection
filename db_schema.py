@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Text, Enum, Boolean, ForeignKey, DateTime, Float, String, func
+from sqlalchemy import Column, Integer, Text, Enum, Boolean, ForeignKey, DateTime, Float, String, func, CheckConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -50,7 +50,8 @@ class Question(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     question_text = Column(Text, nullable=False)
     question_type = Column(
-        Enum('multiple_choice', 'single_choice', 'true_false', 'subjective', name='question_type'),
+        Enum('multiple_choice', 'single_choice', 'true_false', 'subjective', 'integer_type', name='question_type')
+,
         nullable=False
     )
     marks = Column(Integer, nullable=False, default=1)
@@ -72,13 +73,20 @@ class Option(Base):
 
     question = relationship('Question', back_populates='options')
 
-
 class CorrectAnswer(Base):
     __tablename__ = 'correct_answers'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     question_id = Column(Integer, ForeignKey('questions.id', ondelete='CASCADE'), nullable=False)
-    option_id = Column(Integer, ForeignKey('options.id', ondelete='CASCADE'), nullable=False)
+    
+    # Use this for multiple-choice and single-choice questions
+    option_id = Column(Integer, ForeignKey('options.id', ondelete='CASCADE'), nullable=True)
+
+    # Use this for integer-type questions
+    integer_answer = Column(Integer, nullable=True)
+
+    # Ensure either option_id or integer_answer is provided
+    __table_args__ = (CheckConstraint('(option_id IS NOT NULL) OR (integer_answer IS NOT NULL)', name='correct_answer_constraint'),)
 
 
 def create_combined_db(db_url='sqlite:///instance/database.db'):
